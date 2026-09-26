@@ -1,5 +1,10 @@
 import CollectionPage from './CollectionPage.jsx'
 
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const endpoint = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/workouts/`
+  : null
+
 const columns = [
   { key: 'name', label: 'Treino' },
   { key: 'category', label: 'Categoria' },
@@ -11,7 +16,7 @@ const columns = [
 function Workouts() {
   return (
     <CollectionPage
-      endpoint="/api/workouts/"
+      endpoint={endpoint}
       category="PLANEJAMENTO"
       title="Treinos"
       description="Sugestões para manter o ritmo e variar os estímulos."

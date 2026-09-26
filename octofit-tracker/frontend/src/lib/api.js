@@ -1,13 +1,3 @@
-const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-const apiOrigin = codespaceName
-  ? `https://${codespaceName}-8000.app.github.dev`
-  : ''
-
-export function resolveApiUrl(endpoint) {
-  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
-  return `${apiOrigin}${path}`
-}
-
 export function normalizeCollectionResponse(payload) {
   if (Array.isArray(payload)) return payload
   if (!payload || typeof payload !== 'object') return []
@@ -32,7 +22,11 @@ export function normalizeCollectionResponse(payload) {
 }
 
 export async function fetchCollection(endpoint, { signal } = {}) {
-  const response = await fetch(resolveApiUrl(endpoint), {
+  if (!endpoint || !/^https:\/\/[^/]+\/api\//i.test(endpoint)) {
+    throw new Error('Configure VITE_CODESPACE_NAME para conectar à API do Codespace.')
+  }
+
+  const response = await fetch(endpoint, {
     signal,
     headers: { Accept: 'application/json' },
   })

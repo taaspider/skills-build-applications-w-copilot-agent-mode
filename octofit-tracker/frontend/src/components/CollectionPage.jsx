@@ -27,6 +27,8 @@ function CollectionPage({ endpoint, category, title, description, columns }) {
   const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
+    if (!endpoint) return
+
     const controller = new AbortController()
 
     fetchCollection(endpoint, { signal: controller.signal })
@@ -45,6 +47,20 @@ function CollectionPage({ endpoint, category, title, description, columns }) {
     setError('')
     setLoading(true)
     setReloadKey((key) => key + 1)
+  }
+
+  if (!endpoint) {
+    return (
+      <section className="collection-page" aria-labelledby="collection-title">
+        <div className="page-heading">
+          <div>
+            <span className="eyebrow">CONFIGURAÇÃO</span>
+            <h1 id="collection-title">API indisponível</h1>
+            <p>Defina VITE_CODESPACE_NAME no arquivo .env.local com o nome do Codespace e reinicie o Vite.</p>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (

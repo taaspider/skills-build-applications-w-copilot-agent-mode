@@ -8,7 +8,7 @@ Defina `VITE_CODESPACE_NAME` no arquivo `.env.local` com o nome do Codespace, se
 VITE_CODESPACE_NAME=seu-nome-de-codespace
 ```
 
-Com a variável definida, o frontend chama `https://<nome>-8000.app.github.dev/api/`. Sem ela, usa caminhos relativos `/api/...`; o proxy do Vite encaminha as requisições para `http://localhost:8000`. `VITE_CODESPACE_NAME` é uma variável pública embutida no bundle, então não coloque segredos nela.
+`VITE_CODESPACE_NAME` é obrigatória. Sem ela, o aplicativo mostra um aviso de configuração e não envia requisições relativas nem URLs com `undefined`. O frontend chama `https://<nome>-8000.app.github.dev/api/` diretamente. `VITE_CODESPACE_NAME` é uma variável pública embutida no bundle, então não coloque segredos nela.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

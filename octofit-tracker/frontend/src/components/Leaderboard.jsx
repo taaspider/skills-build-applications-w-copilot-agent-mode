@@ -1,5 +1,10 @@
 import CollectionPage from './CollectionPage.jsx'
 
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const endpoint = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/leaderboard/`
+  : null
+
 const columns = [
   { key: 'rank', label: 'Posição', render: (value) => `#${value ?? '—'}` },
   { key: 'userName', label: 'Pessoa' },
@@ -11,7 +16,7 @@ const columns = [
 function Leaderboard() {
   return (
     <CollectionPage
-      endpoint="/api/leaderboard/"
+      endpoint={endpoint}
       category="DESEMPENHO"
       title="Ranking"
       description="Acompanhe os pontos conquistados pela comunidade."

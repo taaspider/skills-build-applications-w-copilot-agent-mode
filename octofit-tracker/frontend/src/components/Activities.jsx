@@ -1,5 +1,10 @@
 import CollectionPage from './CollectionPage.jsx'
 
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const endpoint = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/activities/`
+  : null
+
 const columns = [
   { key: 'type', label: 'Atividade' },
   { key: 'userId', label: 'Pessoa' },
@@ -18,7 +23,7 @@ const columns = [
 function Activities() {
   return (
     <CollectionPage
-      endpoint="/api/activities/"
+      endpoint={endpoint}
       category="MOVIMENTO"
       title="Atividades"
       description="Sessões registradas pela comunidade."
