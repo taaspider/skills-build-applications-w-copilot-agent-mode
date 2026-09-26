@@ -4,7 +4,7 @@ import Leaderboard from './components/Leaderboard.jsx'
 import Teams from './components/Teams.jsx'
 import Users from './components/Users.jsx'
 import Workouts from './components/Workouts.jsx'
-import './Octofit.css'
+import './App.css'
 
 const navigation = [
   { to: '/activities', label: 'Atividades', number: '01' },
@@ -18,16 +18,18 @@ function App() {
   return (
     <div className="octofit-app">
       <header className="topbar">
-        <NavLink className="brand" to="/activities" aria-label="OctoFit Tracker, início">
-          <img src="/octofitapp-small.png" alt="" className="brand-logo" />
-          <span className="brand-copy">
-            <strong>octofit</strong>
-            <span>FITNESS, EM MOVIMENTO</span>
-          </span>
-        </NavLink>
-        <div className="topbar-meta">
-          <span className="live-dot" aria-hidden="true" />
-          <span>API <b>8000</b></span>
+        <div className="topbar-inner">
+          <NavLink className="brand" to="/activities" aria-label="OctoFit Tracker, início">
+            <img src="/octofitapp-small.png" alt="" className="brand-logo" />
+            <span className="brand-copy">
+              <strong>octofit</strong>
+              <span>FITNESS, EM MOVIMENTO</span>
+            </span>
+          </NavLink>
+          <div className="topbar-meta">
+            <span className="live-dot" aria-hidden="true" />
+            <span>API <b>8000</b></span>
+          </div>
         </div>
       </header>
 

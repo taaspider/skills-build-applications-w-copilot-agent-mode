@@ -109,3 +109,26 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+:root {
+  color: #24332e;
+  background: #f4f6f1;
+  color-scheme: light;
+  font: 16px/1.5 'Avenir Next', 'Gill Sans', sans-serif;
+  letter-spacing: 0;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f4f6f1;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  border: 0;
+  text-align: left;
+}

@@ -9,14 +9,16 @@ const columns = [
   {
     key: 'completedAt',
     label: 'Concluída em',
-    render: (value) => value ? new Intl.DateTimeFormat('pt-BR').format(new Date(value)) : '—',
+    render: (value) => value
+      ? new Intl.DateTimeFormat('pt-BR').format(new Date(value))
+      : '—',
   },
 ]
 
 function Activities() {
   return (
     <CollectionPage
-      resource="activities"
+      endpoint="/api/activities/"
       category="MOVIMENTO"
       title="Atividades"
       description="Sessões registradas pela comunidade."

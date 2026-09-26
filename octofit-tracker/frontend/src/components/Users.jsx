@@ -3,18 +3,18 @@ import CollectionPage from './CollectionPage.jsx'
 const columns = [
   { key: 'name', label: 'Pessoa' },
   { key: 'email', label: 'E-mail' },
-  { key: 'age', label: 'Idade', render: (value) => value ? `${value} anos` : '—' },
-  { key: 'totalPoints', label: 'Pontos', render: (value) => Number(value ?? 0).toLocaleString('pt-BR') },
+  { key: 'age', label: 'Idade' },
   { key: 'teamId', label: 'Equipe' },
+  { key: 'totalPoints', label: 'Pontos' },
 ]
 
 function Users() {
   return (
     <CollectionPage
-      resource="users"
+      endpoint="/api/users/"
       category="COMUNIDADE"
       title="Pessoas"
-      description="Perfis e evolução dos participantes."
+      description="Perfis que fazem parte do OctoFit Tracker."
       columns={columns}
     />
   )

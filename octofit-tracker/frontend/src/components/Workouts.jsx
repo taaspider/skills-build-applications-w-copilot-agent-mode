@@ -5,16 +5,16 @@ const columns = [
   { key: 'category', label: 'Categoria' },
   { key: 'difficulty', label: 'Nível' },
   { key: 'durationMinutes', label: 'Duração', render: (value) => `${value ?? 0} min` },
-  { key: 'exercises', label: 'Exercícios', render: (value) => value?.length ?? 0 },
+  { key: 'exercises', label: 'Exercícios' },
 ]
 
 function Workouts() {
   return (
     <CollectionPage
-      resource="workouts"
-      category="TREINAMENTO"
+      endpoint="/api/workouts/"
+      category="PLANEJAMENTO"
       title="Treinos"
-      description="Planos práticos para a próxima sessão."
+      description="Sugestões para manter o ritmo e variar os estímulos."
       columns={columns}
     />
   )

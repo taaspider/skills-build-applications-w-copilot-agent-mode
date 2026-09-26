@@ -1,37 +1,45 @@
-const codespaceName = (import.meta.env.VITE_CODESPACE_NAME ?? '').trim()
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+const apiOrigin = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev`
+  : ''
 
-export const API_BASE_URL = codespaceName
-  ? `https://${codespaceName}-8000.app.github.dev/api`
-  : '/api'
+export function resolveApiUrl(endpoint) {
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  return `${apiOrigin}${path}`
+}
 
-function unwrapCollection(payload) {
+export function normalizeCollectionResponse(payload) {
   if (Array.isArray(payload)) return payload
-  if (!payload || typeof payload !== 'object') return null
+  if (!payload || typeof payload !== 'object') return []
 
-  for (const key of ['results', 'items', 'records', 'docs', 'data']) {
-    const value = payload[key]
-    if (Array.isArray(value)) return value
+  const candidates = [
+    payload.results,
+    payload.items,
+    payload.docs,
+    payload.records,
+    payload.data,
+  ]
 
-    const nested = unwrapCollection(value)
-    if (nested !== null) return nested
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) return candidate
+    if (candidate && typeof candidate === 'object') {
+      const nestedRecords = normalizeCollectionResponse(candidate)
+      if (nestedRecords.length > 0) return nestedRecords
+    }
   }
 
-  return null
+  return []
 }
 
-export function normalizeCollection(payload) {
-  return unwrapCollection(payload) ?? []
-}
-
-export async function fetchCollection(resource, { signal } = {}) {
-  const response = await fetch(`${API_BASE_URL}/${resource}/`, {
-    headers: { Accept: 'application/json' },
+export async function fetchCollection(endpoint, { signal } = {}) {
+  const response = await fetch(resolveApiUrl(endpoint), {
     signal,
+    headers: { Accept: 'application/json' },
   })
 
   if (!response.ok) {
-    throw new Error(`Não foi possível carregar os dados (${response.status}).`)
+    throw new Error(`Falha ao carregar dados (${response.status}).`)
   }
 
-  return normalizeCollection(await response.json())
+  return normalizeCollectionResponse(await response.json())
 }

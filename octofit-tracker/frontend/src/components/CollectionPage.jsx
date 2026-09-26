@@ -3,28 +3,34 @@ import { fetchCollection } from '../lib/api.js'
 
 function formatValue(value) {
   if (value === null || value === undefined || value === '') return '—'
+
   if (Array.isArray(value)) {
-    return value
-      .map((item) => (typeof item === 'object' && item !== null ? item.name ?? item.title ?? '' : item))
+    const labels = value
+      .map((item) => (typeof item === 'object' && item !== null
+        ? item.name ?? item.title ?? item.email ?? item._id
+        : item))
       .filter(Boolean)
-      .join(', ') || `${value.length} itens`
+    return labels.join(', ') || `${value.length} itens`
   }
+
   if (typeof value === 'object') {
     return value.name ?? value.title ?? value.email ?? value.slug ?? value._id ?? '—'
   }
+
   return value
 }
 
-function CollectionPage({ resource, title, category, description, columns }) {
+function CollectionPage({ endpoint, category, title, description, columns }) {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
 
-    fetchCollection(resource, { signal: controller.signal })
-      .then(setRecords)
+    fetchCollection(endpoint, { signal: controller.signal })
+      .then((data) => setRecords(data))
       .catch((requestError) => {
         if (requestError.name !== 'AbortError') setError(requestError.message)
       })
@@ -33,77 +39,88 @@ function CollectionPage({ resource, title, category, description, columns }) {
       })
 
     return () => controller.abort()
-  }, [resource])
+  }, [endpoint, reloadKey])
+
+  function reload() {
+    setError('')
+    setLoading(true)
+    setReloadKey((key) => key + 1)
+  }
 
   return (
-    <section className="collection-page" aria-labelledby="page-title">
+    <section className="collection-page" aria-labelledby="collection-title">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">{category} <span>/</span> OCTOFIT TRACKER</p>
-          <h1 id="page-title">{title}</h1>
-          <p className="page-description">{description}</p>
+          <span className="eyebrow">{category}</span>
+          <h1 id="collection-title">{title}</h1>
+          <p>{description}</p>
         </div>
-        <div className="record-total" aria-live="polite">
-          <span>{loading ? '—' : records.length.toLocaleString('pt-BR')}</span>
-          <small>REGISTROS</small>
+        <div className="record-summary" aria-live="polite">
+          <strong>{loading ? '—' : records.length}</strong>
+          <span>registros</span>
         </div>
       </div>
 
-      <div className="collection-panel">
-        <div className="panel-heading">
-          <div>
-            <span className="panel-kicker">VISÃO GERAL</span>
-            <h2>{title}</h2>
-          </div>
-          <span className="api-indicator"><span /> DADOS DA API</span>
+      <div className="collection-toolbar">
+        <span>{loading ? 'Sincronizando dados' : 'Dados atualizados da API'}</span>
+        <button
+          className="btn btn-outline-success btn-sm"
+          type="button"
+          onClick={reload}
+          disabled={loading}
+        >
+          Atualizar
+        </button>
+      </div>
+
+      {error && (
+        <div className="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+          <span>{error}</span>
+          <button
+            className="btn btn-sm btn-outline-danger"
+            type="button"
+            onClick={reload}
+          >
+            Tentar novamente
+          </button>
         </div>
+      )}
 
-        {loading && (
-          <div className="table-message" role="status">
-            <span className="loading-mark" /> Carregando dados
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="table-message error-message" role="alert">
-            <strong>Não foi possível carregar esta seção.</strong>
-            <span>{error}</span>
-          </div>
-        )}
-
-        {!loading && !error && records.length === 0 && (
-          <div className="table-message">Nenhum registro encontrado.</div>
-        )}
-
-        {!loading && !error && records.length > 0 && (
-          <div className="table-responsive">
-            <table className="table collection-table mb-0">
-              <thead>
-                <tr>
-                  {columns.map((column) => <th key={column.key} scope="col">{column.label}</th>)}
+      {loading ? (
+        <div className="loading-state" role="status">
+          <span className="spinner-border spinner-border-sm" aria-hidden="true" />
+          <span>Carregando {title.toLowerCase()}...</span>
+        </div>
+      ) : records.length === 0 && !error ? (
+        <div className="empty-state">
+          <strong>Nenhum registro por aqui ainda.</strong>
+          <span>Os dados aparecerão nesta lista quando forem adicionados à API.</span>
+        </div>
+      ) : records.length > 0 ? (
+        <div className="table-responsive collection-table-wrap">
+          <table className="table align-middle collection-table">
+            <thead>
+              <tr>
+                {columns.map((column) => <th key={column.key} scope="col">{column.label}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record, index) => (
+                <tr key={record._id ?? record.id ?? index}>
+                  {columns.map((column) => {
+                    const value = record[column.key]
+                    return (
+                      <td key={column.key}>
+                        {column.render ? column.render(value, record) : formatValue(value)}
+                      </td>
+                    )
+                  })}
                 </tr>
-              </thead>
-              <tbody>
-                {records.map((record, index) => (
-                  <tr key={record._id ?? record.id ?? `${resource}-${index}`}>
-                    {columns.map((column) => {
-                      const value = column.render
-                        ? column.render(record[column.key], record)
-                        : formatValue(record[column.key])
-                      return <td key={column.key}>{value}</td>
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="panel-footer">
-          <span>ATUALIZAÇÃO EM TEMPO REAL</span>
-          <span>{loading ? 'Sincronizando' : error ? 'Sem conexão' : 'Sincronizado'}</span>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      ) : null}
     </section>
   )
 }
