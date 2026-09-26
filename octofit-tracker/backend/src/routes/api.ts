@@ -62,15 +62,6 @@ function collectionRouter<T>(model: Model<T>) {
   return router
 }
 
-const codespaceName = process.env.CODESPACE_NAME
-const apiBaseUrl = codespaceName
-  ? `https://${codespaceName}-8000.app.github.dev`
-  : 'http://localhost:8000'
-
-apiRouter.get('/config', (_request, response) => {
-  response.json({ apiBaseUrl })
-})
-
 apiRouter.use('/users', collectionRouter(User))
 apiRouter.use('/teams', collectionRouter(Team))
 apiRouter.use('/activities', collectionRouter(Activity))
