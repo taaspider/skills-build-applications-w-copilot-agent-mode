@@ -11,7 +11,8 @@ In this exercise, you will build a **modern multi-tier application** for OctoFit
 ### :keyboard: Activity: Set up Codespaces and publish your working branch
 
 To work on this exercise, first create a Codespace for **your copy** of the repository.
-
+ 
+ 
 1. Open the button below in a new tab to launch the **Create Codespace** page. Use the default configuration.
 
    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/{{full_repo_name}}?quickstart=1)
