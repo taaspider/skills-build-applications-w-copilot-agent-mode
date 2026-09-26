@@ -1,5 +1,17 @@
 # React + Vite
 
+## API URL
+
+For direct access to the Codespaces API, define `VITE_CODESPACE_NAME` in `.env.local` using only the Codespace name, then restart Vite:
+
+```env
+VITE_CODESPACE_NAME=your-codespace-name
+```
+
+When set, the app calls `https://<name>-8000.app.github.dev/api/`. When unset, it requests `/api/`, and the Vite development proxy forwards requests to `http://localhost:8000`.
+
+Copy `.env.example` to `.env.local` and replace the example value for Codespaces. Vite exposes `VITE_` variables to browser code; do not put secrets in them.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
